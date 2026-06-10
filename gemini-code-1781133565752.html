@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard 5 Anos com Filtro - BC Bella & Chic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .bg-brand { background-color: #bc938b; }
+        .text-brand { color: #bc938b; }
+        .border-brand { border-color: #bc938b; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans pb-12">
+
+    <nav class="bg-brand text-white shadow-md px-6 py-4 mb-8">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-wide">BC BELLA & CHIC</h1>
+                <p class="text-xs opacity-90">Painel Histórico Estratégico com Filtro Dinâmico</p>
+            </div>
+            
+            <div class="flex items-center gap-2 bg-white/10 p-2 rounded-lg backdrop-blur-sm">
+                <label for="filtroAno" class="text-xs font-bold uppercase tracking-wider text-white">Filtrar Ano:</label>
+                <select id="filtroAno" class="bg-white text-gray-800 text-sm font-semibold rounded px-3 py-1.5 outline-none cursor-pointer border-none shadow-sm focus:ring-2 focus:ring-brand">
+                    <option value="todos" selected>Todos os Anos (Histórico)</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+            <div class="bg-white p-5 rounded-xl shadow-sm border-t-4 border-green-500">
+                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Faturamento Bruto</p>
+                <p id="kpiFaturamento" class="text-xl font-bold text-gray-800 mt-1">R$ 129.500</p>
+                <p id="subFaturamento" class="text-xs text-gray-400 mt-1">Acumulado 5 Anos: R$ 503.500</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border-t-4 border-blue-500">
+                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Margem Líquida</p>
+                <p id="kpiMargem" class="text-xl font-bold text-gray-800 mt-1">14,3%</p>
+                <p id="subMargem" class="text-xs text-gray-400 mt-1">Média Histórica: 11,8%</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border-t-4 border-emerald-500">
+                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Custo de Aquisição (CAC)</p>
+                <p id="kpiCAC" class="text-xl font-bold text-gray-800 mt-1">R$ 4,00</p>
+                <p id="subCAC" class="text-xs text-gray-400 mt-1">Melhor marca histórica</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border-t-4 border-purple-500">
+                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Lifetime Value (LTV)</p>
+                <p id="kpiLTV" class="text-xl font-bold text-gray-800 mt-1">R$ 380,00</p>
+                <p id="subLTV" class="text-xs text-gray-400 mt-1">Relação LTV/CAC: 95x</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border-t-4 border-amber-500">
+                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">Giro de Estoque</p>
+                <p id="kpiEstoque" class="text-xl font-bold text-gray-800 mt-1">6,1x / ano</p>
+                <p id="subEstoque" class="text-xs text-gray-400 mt-1">Renovação a cada 59 dias</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-5 rounded-xl shadow-sm">
+                <h3 class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">1. Faturamento Bruto Anual</h3>
+                <div class="relative h-56"><canvas id="chartFaturamento"></canvas></div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm">
+                <h3 class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">2. Margem de Lucro Líquida</h3>
+                <div class="relative h-56"><canvas id="chartMargem"></canvas></div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm">
+                <h3 class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">3. Custo de Aquisição (CAC)</h3>
+                <div class="relative h-56"><canvas id="chartCAC"></canvas></div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm">
+                <h3 class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">4. Lifetime Value (LTV)</h3>
+                <div class="relative h-56"><canvas id="chartLTV"></canvas></div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm md:col-span-2 lg:col-span-2">
+                <h3 class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">5. Giro de Estoque (Vezes por Ano)</h3>
+                <div class="relative h-56"><canvas id="chartEstoque"></canvas></div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6 border-l-8 border-brand">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">💡 Diretrizes Estratégicas do Período Selecionado</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-bold text-brand text-sm mb-2">1. Eficiência de Marketing (LTV/CAC)</h4>
+                    <p id="insightMarketing" class="text-xs text-gray-600 leading-relaxed">A análise histórica revela um amadurecimento impressionante na aquisição de clientes. Com a tração conquistada de forma orgânica, a Bella & Chic pode focar em retenção via WhatsApp sem queimar caixa em tráfego pago ineficiente.</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-bold text-brand text-sm mb-2">2. Ritmo de Renovação (Giro de Estoque)</h4>
+                    <p id="insightEstoque" class="text-xs text-gray-600 leading-relaxed">O estoque ganhou velocidade ano a ano. Para manter o caixa oxigenado, a transição para coleções cápsula mensais reduz a necessidade de capital imobilizado em peças de baixa saída.</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-bold text-brand text-sm mb-2">3. Consolidação de Margens</h4>
+                    <p id="insightMargem" class="text-xs text-gray-600 leading-relaxed">Com margens estabilizadas acima dos dois dígitos, o principal foco estratégico do negócio deve ser a pulverização de canais digitais (como sacolinha do Instagram) para diluir custos fixos da estrutura física.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const anos = ['2021', '2022', '2023', '2024', '2025'];
+        const bancoDados = {
+            "2021": { faturamento: "R$ 65.000", margem: "8,5%", cac: "R$ 18,50", ltv: "R$ 190,00", estoque: "3,2x", subFat: "Início do histórico", subMarg: "Validação de mercado", subCac: "CAC alto de introdução", subLtv: "LTV inicial", subEst: "Renovação: 114 dias", insMkt: "Fase inicial de posicionamento. Custos de marketing elevados devido à necessidade de introduzir a marca na comunidade local.", insEst: "Giro lento natural para uma boutique em estruturação. Atenção para não reter peças sazonais de frio/calor por muito tempo.", insMarg: "Margem inicial impactada pelos custos fixos de setup da loja física e baixo volume de compras com fornecedores em atacado." },
+            "2022": { faturamento: "R$ 82.000", margem: "10,2%", cac: "R$ 14,20", ltv: "R$ 220,00", estoque: "4,0x", subFat: "Crescimento: +26%", subMarg: "Rompeu barreira dos 10%", subCac: "Otimização inicial", subLtv: "Crescimento de retenção", subEst: "Renovação: 91 dias", insMkt: "O marketing boca a boca regional e o Instagram começam a tracionar. Custo por novo cliente começa a cair de forma saudável.", insEst: "Melhoria na velocidade das vendas. O mix de produtos começa a se ajustar aos gostos reais da base compradora local.", insMarg: "A diluição dos custos fixos com o aumento do faturamento empurra a margem líquida para a zona saudável dos dois dígitos." },
+            "2023": { faturamento: "R$ 105.000", margem: "12,0%", cac: "R$ 11,50", ltv: "R$ 265,00", estoque: "4,8x", subFat: "Ultrapassou R$ 100k", subMarg: "Evolução constante", subCac: "Maturação orgânica", subLtv: "Fidelização em alta", subEst: "Renovação: 76 dias", insMkt: "Listas de transmissão no WhatsApp e atendimento altamente personalizado reduzem a necessidade de anúncios patrocinados caros.", insEst: "Estoque saudável girando perto de 5 vezes ao ano. Menor necessidade de saldos agressivos para desovar coleções antigas.", insMarg: "Aumento das compras em escala expande a margem de contribuição. Custos fixos estabilizados aumentam o lucro final." },
+            "2024": { faturamento: "R$ 122.000", margem: "13,8%", cac: "R$ 8,90", ltv: "R$ 310,00", estoque: "5,5x", subFat: "Consolidação de marca", subMarg: "Nível ótimo físico", subCac: "Comunidade forte", subLtv: "Relação LTV/CAC: 34x", subEst: "Renovação: 66 dias", insMkt: "A Bella & Chic torna-se referência regional em moda e autocuidado. A recorrência anual de compras por cliente dispara.", insEst: "Giro veloz. O tempo médio de uma peça em prateleira cai para cerca de dois meses, mantendo a loja com novidades frequentes.", insMarg: "Alta eficiência operacional interna. A estrutura física opera no topo de faturamento por metro quadrado disponível." },
+            "2025": { faturamento: "R$ 129.500", margem: "14,3%", cac: "R$ 4,00", ltv: "R$ 380,00", estoque: "6,1x", subFat: "Ano recorde histórico", subMarg: "Teto da operação atual", subCac: "Melhor índice de sempre", subLtv: "Relação LTV/CAC: 95x", subEst: "Renovação: 59 dias", insMkt: "Maturidade digital. Clientes antigas atuam como promotoras, trazendo novos fluxos de clientes com custo de tráfego quase nulo.", insEst: "Giro excelente abaixo de 60 dias. Liberação imediata de fluxo de caixa para compra de novas tendências sem endividamento.", insMarg: "Maior eficiência líquida dos 5 anos. Empresa estável, rentável e madura para iniciar expansão para e-commerce puro." },
+            "todos": { faturamento: "R$ 129.500", margem: "14,3%", cac: "R$ 4,00", ltv: "R$ 380,00", estoque: "6,1x", subFat: "Acumulado 5 Anos: R$ 503.500", subMarg: "Média Histórica: 11,8%", subCac: "Melhor marca histórica", subLtv: "Relação LTV/CAC: 95x", subEst: "Renovação a cada 59 dias", insMkt: "A análise histórica revela um amadurecimento impressionante na aquisição de clientes. Com a tração conquistada de forma orgânica, a Bella & Chic pode focar em retenção via WhatsApp sem queimar caixa em tráfego pago ineficiente.", insEst: "O estoque ganhou velocidade ano a ano. Para manter o caixa oxigenado, a transição para coleções cápsula mensais reduz a necessidade de capital imobilizado em peças de baixa saída.", insMarg: "Com margens estabilizadas acima dos dois dígitos, o principal foco estratégico do negócio deve ser a pulverização de canais digitais (como sacolinha do Instagram) para diluir custos fixos da estrutura física." }
+        };
+
+        const dataFat = [65000, 82000, 105000, 122000, 129500];
+        const dataMarg = [8.5, 10.2, 12.0, 13.8, 14.3];
+        const dataCac = [18.50, 14.20, 11.50, 8.90, 4.00];
+        const dataLtv = [190, 220, 265, 310, 380];
+        const dataEst = [3.2, 4.0, 4.8, 5.5, 6.1];
+
+        const optComum = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+
+        const chartFaturamento = new Chart(document.getElementById('chartFaturamento'), {
+            type: 'bar', data: { labels: anos, datasets: [{ data: dataFat, backgroundColor: ['#bc938b','#bc938b','#bc938b','#bc938b','#22c55e'] }] }, options: optComum
+        });
+        const chartMargem = new Chart(document.getElementById('chartMargem'), {
+            type: 'line', data: { labels: anos, datasets: [{ data: dataMarg, borderColor: '#3b82f6', tension: 0.2, fill: false, pointBackgroundColor: '#3b82f6' }] }, options: optComum
+        });
+        const chartCAC = new Chart(document.getElementById('chartCAC'), {
+            type: 'line', data: { labels: anos, datasets: [{ data: dataCac, borderColor: '#ef4444', tension: 0.2, fill: false, pointBackgroundColor: '#ef4444' }] }, options: optComum
+        });
+        const chartLTV = new Chart(document.getElementById('chartLTV'), {
+            type: 'bar', data: { labels: anos, datasets: [{ data: dataLtv, backgroundColor: ['#bc938b','#bc938b','#bc938b','#bc938b','#a855f7'] }] }, options: optComum
+        });
+        const chartEstoque = new Chart(document.getElementById('chartEstoque'), {
+            type: 'line', data: { labels: anos, datasets: [{ data: dataEst, borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.08)', fill: true, tension: 0.2 }] }, options: optComum
+        });
+
+        document.getElementById('filtroAno').addEventListener('change', function() {
+            const selecao = this.value;
+            const dados = bancoDados[selecao];
+
+            document.getElementById('kpiFaturamento').innerText = dados.faturamento;
+            document.getElementById('subFaturamento').innerText = dados.subFat;
+            document.getElementById('kpiMargem').innerText = dados.margem;
+            document.getElementById('subMargem').innerText = dados.subMarg;
+            document.getElementById('kpiCAC').innerText = dados.cac;
+            document.getElementById('subCAC').innerText = dados.subCac;
+            document.getElementById('kpiLTV').innerText = dados.ltv;
+            document.getElementById('subLTV').innerText = dados.subLtv;
+            document.getElementById('kpiEstoque').innerText = dados.estoque;
+            document.getElementById('subEstoque').innerText = dados.subEst;
+
+            document.getElementById('insightMarketing').innerText = dados.insMkt;
+            document.getElementById('insightEstoque').innerText = dados.insEst;
+            document.getElementById('insightMargem').innerText = dados.insMarg;
+
+            if(selecao !== 'todos') {
+                const idx = anos.indexOf(selecao);
+                chartFaturamento.data.datasets[0].backgroundColor = anos.map((a, i) => i === idx ? '#22c55e' : '#e5e7eb');
+                chartLTV.data.datasets[0].backgroundColor = anos.map((a, i) => i === idx ? '#a855f7' : '#e5e7eb');
+                chartMargem.data.datasets[0].pointRadius = anos.map((a, i) => i === idx ? 8 : 3);
+                chartMargem.data.datasets[0].pointBackgroundColor = anos.map((a, i) => i === idx ? '#22c55e' : '#3b82f6');
+                chartCAC.data.datasets[0].pointRadius = anos.map((a, i) => i === idx ? 8 : 3);
+                chartCAC.data.datasets[0].pointBackgroundColor = anos.map((a, i) => i === idx ? '#22c55e' : '#ef4444');
+                chartEstoque.data.datasets[0].pointRadius = anos.map((a, i) => i === idx ? 8 : 3);
+                chartEstoque.data.datasets[0].pointBackgroundColor = anos.map((a, i) => i === idx ? '#22c55e' : '#f59e0b');
+            } else {
+                chartFaturamento.data.datasets[0].backgroundColor = ['#bc938b','#bc938b','#bc938b','#bc938b','#22c55e'];
+                chartLTV.data.datasets[0].backgroundColor = ['#bc938b','#bc938b','#bc938b','#bc938b','#a855f7'];
+                chartMargem.data.datasets[0].pointRadius = 3;
+                chartMargem.data.datasets[0].pointBackgroundColor = '#3b82f6';
+                chartCAC.data.datasets[0].pointRadius = 3;
+                chartCAC.data.datasets[0].pointBackgroundColor = '#ef4444';
+                chartEstoque.data.datasets[0].pointRadius = 3;
+                chartEstoque.data.datasets[0].pointBackgroundColor = '#f59e0b';
+            }
+            
+            chartFaturamento.update();
+            chartMargem.update();
+            chartCAC.update();
+            chartLTV.update();
+            chartEstoque.update();
+        });
+    </script>
+</body>
+</html>
